@@ -196,7 +196,8 @@ class RatingForm(CommentSecurityForm):
         self.previous = request.COOKIES.get("mezzanine-rating", "").split(",")
         already_rated = self.current in self.previous
         if already_rated and not self.request.user.is_authenticated():
-            raise forms.ValidationError(ugettext("Already rated."))
+            raise forms.ValidationError(
+                code='unique', ugettext("Already rated."))
         return self.cleaned_data
 
     def save(self):

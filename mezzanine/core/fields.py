@@ -111,7 +111,7 @@ class MultiChoiceField(with_metaclass(models.SubfieldBase, models.CharField)):
         choices = [str(choice[0]) for choice in self.choices]
         if set(value) - set(choices):
             error = self.error_messages["invalid_choice"] % value
-            raise ValidationError(error)
+            raise ValidationError(code='invalid_choice', error)
 
     def value_to_string(self, obj):
         value = self._get_val_from_obj(obj)

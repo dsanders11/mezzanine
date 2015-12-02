@@ -57,9 +57,11 @@ class LoginForm(Html5Mixin, forms.Form):
         self._user = authenticate(username=username, password=password)
         if self._user is None:
             raise forms.ValidationError(
-                             ugettext("Invalid username/email and password"))
+                code='invalid',
+                ugettext("Invalid username/email and password"))
         elif not self._user.is_active:
-            raise forms.ValidationError(ugettext("Your account is inactive"))
+            raise forms.ValidationError(
+                code='inactive', ugettext("Your account is inactive"))
         return self.cleaned_data
 
     def save(self):
@@ -136,6 +138,7 @@ class ProfileForm(Html5Mixin, forms.ModelForm):
         username = self.cleaned_data.get("username")
         if username.lower() != slugify(username).lower():
             raise forms.ValidationError(
+                code='invalid',
                 ugettext("Username can only contain letters, numbers, dashes "
                          "or underscores."))
         lookup = {"username__iexact": username}
@@ -144,7 +147,8 @@ class ProfileForm(Html5Mixin, forms.ModelForm):
         except User.DoesNotExist:
             return username
         raise forms.ValidationError(
-                            ugettext("This username is already registered"))
+            code='unique',
+            ugettext("This username is already registered"))
 
     def clean_password2(self):
         """
@@ -175,7 +179,8 @@ class ProfileForm(Html5Mixin, forms.ModelForm):
         if len(qs) == 0:
             return email
         raise forms.ValidationError(
-                                ugettext("This email is already registered"))
+            code='unique',
+            ugettext("This email is already registered"))
 
     def save(self, *args, **kwargs):
         """
@@ -254,7 +259,7 @@ class PasswordResetForm(Html5Mixin, forms.Form):
             user = User.objects.get(username_or_email, is_active=True)
         except User.DoesNotExist:
             raise forms.ValidationError(
-                             ugettext("Invalid username/email"))
+                code='invalid', ugettext("Invalid username/email"))
         else:
             self._user = user
         return self.cleaned_data

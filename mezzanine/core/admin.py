@@ -60,8 +60,9 @@ class DisplayableAdminForm(ModelForm):
         status = form.cleaned_data.get("status")
         content = form.cleaned_data.get("content")
         if status == CONTENT_STATUS_PUBLISHED and not content:
-            raise ValidationError(_("This field is required if status "
-                                    "is set to published."))
+            raise ValidationError(
+                code='required', _("This field is required if status "
+                                   "is set to published."))
         return content
 
 
